@@ -1,5 +1,5 @@
 # Hyprland Same App Cycling
-Node.js script to cycle through open instances of the same app that is currently focused
+A Node.js script to cycle through open instances of the same app that is currently focused, similar to the Gnome App Switcher
 
 - download / copy the script
 - add two key binds in ~/.config/hypr/hyprland.conf that run the script:
