@@ -1,5 +1,5 @@
 # Hyprland Same App Cycling
-A Node.js script to cycle through open instances of the same app that is currently focused, similar to parts of the Gnome App Switcher functionality.
+A Node.js helper script for the Hyprland tiling manager which enables cycling through open instances of the same app that is currently focused via a defined key bind, similar to parts of the Gnome App Switcher functionality (Alt+Tab, Super+Tab and Super + <).
 
 - install node
 ```bash
