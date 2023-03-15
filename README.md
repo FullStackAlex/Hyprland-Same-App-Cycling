@@ -7,7 +7,7 @@ sudo pacman -S node # on Arch
 sudo apt-get install -y nodejs # on Debian/Ubuntu
 ```
 - download / copy the index.js script
-- check if /bin/node does exist on your machine or make shebang (first line in the index.js) point to your existing node binary / executable (check via `which node`)
+- check if /bin/node does exist on your machine or make shebang (first line in the index.js) point to your existing node binary / executable (check via `$ which node`)
 - add two key binds in ~/.config/hypr/hyprland.conf that run the script:
 ```
 binde = SUPER, X, exec, $HOME/.bin/cycle_clients_by_class.js
