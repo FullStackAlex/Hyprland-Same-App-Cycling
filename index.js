@@ -133,12 +133,10 @@ const checkSpecialWorkspace = (direction, nextClient, clients, activeWindow) => 
     nextClient = checkSpecialWorkspace(direction, nextClient, clients, activeWindow);
     toggleWrongFullscreenClient(clients, nextClient);
     focusNextClient(nextClient);
+    
     //super buggy:
-    //toggleFullscreen();
-
-
     //if active window is fullscreen toggle next client fullscreen too
-    //
+    //toggleFullscreen();
 
     // if the active window is in the special workspace, toggle the special workspace off after moving to the next client, not working though ...
     // toggleSpecialWorkspace(activeWindow, nextClient);
