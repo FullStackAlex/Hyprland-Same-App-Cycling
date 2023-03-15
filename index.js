@@ -94,22 +94,16 @@ const toggleSpecialWorkspace = (activeWindow, nextClient) => {
     }
 };
 
-// check if the first argument is "prev" (= cycling backwards) and set direction accordingly, if "avoidingspecial is given as third argument, jump by 2 instead of 1
+
+// check if the first argument is "prev" (= cycling backwards) and set direction accordingly
 const getDirection = () => {
-    if (process.argv[3] === "avoidingspecial") {
-        if (process.argv[2] === 'prev') {
-            return -2;
-        } else {
-            return 2;
-        }
+    if (process.argv[2] === 'prev') {
+        return -1;
     } else {
-        if (process.argv[2] === 'prev') {
-            return -1;
-        } else {
-            return 1;
-        }
+        return 1;
     }
 }
+
 
 const checkSpecialWorkspace = (direction, nextClient, clients, activeWindow) => {
     let newDirection = direction;
