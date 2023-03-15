@@ -13,3 +13,8 @@ binde = SUPER, X, exec, $HOME/.bin/cycle_clients_by_class.js
 binde = SUPER SHIFT, X, exec, $HOME/.bin/cycle_clients_by_class.js "prev"
 ```
 - start cycling
+
+## Notes:
+- toggles fullscreen off in the workspace of the next client / window if the fullscreen window is not the next window
+- tried to implement to turn each next client's / window's fullscreen on, but was quite buggy for some reason (I'm lazy to investigate right now)
+- might be buggy in some edge cases didn't test for any situation. For basic usage, though, it works suprisangly flawless. 
