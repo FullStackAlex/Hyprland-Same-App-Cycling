@@ -1,4 +1,4 @@
-    # Hyprland Same App Cycling
+# Hyprland Same App Cycling
 A Node.js script to cycle through open instances of the same app that is currently focused, similar to parts of the Gnome App Switcher functionality.
 
 - install node
