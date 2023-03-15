@@ -29,7 +29,10 @@ const getClientsByWorkspace = (sameClassClients) => {
         if (!acc[client.workspace.id]) {
             acc[client.workspace.id] = [];
         }
-        acc[client.workspace.id].push(client.address);
+        //remove clients in the special workspace from the cycle, as it's currently not possible to toggle the special workspace off (using hyprctl) when moving on to a client outside the special workspace
+        if(client.workspace.id !== -99) {
+            acc[client.workspace.id].push(client.address);
+        }
         return acc;
     }, {});
 };
@@ -82,7 +85,7 @@ const toggleFullscreen = () => {
 }
 
 const focusNextClient = (nextClient) => {
-     exec(`hyprctl dispatch focuswindow address:${nextClient.address}`);
+    exec(`hyprctl dispatch focuswindow address:${nextClient.address}`);
 };
 
 const toggleSpecialWorkspace = (activeWindow, nextClient) => {
@@ -94,7 +97,6 @@ const toggleSpecialWorkspace = (activeWindow, nextClient) => {
     }
 };
 
-
 // check if the first argument is "prev" (= cycling backwards) and set direction accordingly
 const getDirection = () => {
     if (process.argv[2] === 'prev') {
@@ -105,22 +107,6 @@ const getDirection = () => {
 }
 
 
-const checkSpecialWorkspace = (direction, nextClient, clients, activeWindow) => {
-    let newDirection = direction;
-    if (nextClient.workspace.id === -99) {
-        // get the sign of the direction
-        let sign = direction / Math.abs(direction);
-        // jump by 2 instead of 1
-        newDirection =  (Math.abs(direction) + 2) * sign;
-    }
-    nextClient = getNextClient(clients, activeWindow, newDirection);
-    if(nextClient.workspace.id === -99) {
-        checkSpecialWorkspace(newDirection, nextClient);
-    }else{
-        return  nextClient;
-    }
-}
-
 // wait for both promises to resolve and then execute the rest of the script
 (async () => {
     const [clients, activeWindow] = await Promise.all([
@@ -130,14 +116,14 @@ const checkSpecialWorkspace = (direction, nextClient, clients, activeWindow) => 
 
     let direction = getDirection();
     let nextClient = getNextClient(clients, activeWindow, direction);
-    nextClient = checkSpecialWorkspace(direction, nextClient, clients, activeWindow);
     toggleWrongFullscreenClient(clients, nextClient);
     focusNextClient(nextClient);
-    
+
     //super buggy:
     //if active window is fullscreen toggle next client fullscreen too
     //toggleFullscreen();
 
-    // if the active window is in the special workspace, toggle the special workspace off after moving to the next client, not working though ...
+
+    // if the active window is in the special workspace and the next client is not, toggle the special workspace off, not working though ...
     // toggleSpecialWorkspace(activeWindow, nextClient);
 })();
