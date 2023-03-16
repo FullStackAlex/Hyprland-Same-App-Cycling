@@ -16,8 +16,11 @@ binde = SUPER ALT, X, exec, $HOME/.bin/cycle_clients_by_class.mjs --fullscreen b
 binde = SUPER ALT SHIFT, X, exec, $HOME/.bin/cycle_clients_by_class.mjs --direction back --fullscreen bordered
 ```
 the script accepts two arguments: `--direction` and `--fullscreen`
+
 `--directions` has the options `back` and `forward` (default)
+
 `--fullscreen` has the options `false` (default), `bordered` (equal to `hyprctl dispatch fullscreen 1`) and `borderless` (equal to `hyprctl dispatch fullscreen 0`) 
+
 - start cycling
 
 ## Notes:
