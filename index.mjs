@@ -1,5 +1,39 @@
 #!/bin/node
-const { exec } = require('child_process');
+import {exec} from "child_process";
+
+function getArg(name) {
+
+    const args = process.argv.slice(2);
+
+    let fullscreen = false;
+    let direction = 'forward';
+
+    for (let i = 0; i < args.length; i++) {
+        const arg = args[i];
+        const nextArg = args[i + 1];
+
+        if (arg === '--fullscreen' && ['borderless', 'bordered'].includes(nextArg)) {
+            fullscreen = nextArg;
+            i++; // skip next argument
+        } else if (arg === '--direction' && ['forward', 'back'].includes(nextArg)) {
+            direction = nextArg;
+            i++; // skip next argument
+        }
+    }
+
+    direction = direction === 'forward' ? 1 : -1;
+
+    switch (name) {
+        case 'fullscreen':
+            return fullscreen;
+        case 'direction':
+            return direction;
+        default:
+            return undefined;
+    }
+}
+
+
 
 // hyprctl used multiple times, so it's better to wrap it in a DRY function
 const getHyprCtlJSON = (command) => {
@@ -25,7 +59,8 @@ const getSameClassClients = (clients, activeWindow) => {
 //put all clients of the same class as the active one into a map that is grouped by their workspace they are in,
 // so that there are no back and forth jumps between workspaces,but a continuous cycle in a circle
 const getClientsByWorkspace = (sameClassClients) => {
-    return sameClassClients.reduce((acc, client) => {
+    
+    let clientsByWorkspace =  sameClassClients.reduce((acc, client) => {
         if (!acc[client.workspace.id]) {
             acc[client.workspace.id] = [];
         }
@@ -33,8 +68,21 @@ const getClientsByWorkspace = (sameClassClients) => {
         if(client.workspace.id !== -99) {
             acc[client.workspace.id].push(client.address);
         }
+
         return acc;
     }, {});
+    //sort the clients within each workspace by the ascending client address id, so that the order of the clients in the cycle is the same on each iteration
+    // otherwise the order changes on each movement like this:
+    // on one client it's { '3': [ '0x4ec230e0', '0x4ec172a0' ], '4': [ '0x4d6686c0' ] }
+    // but on the other it's { '3': [ '0x4ec172a0', '0x4ec230e0' ], '4': [ '0x4d6686c0' ] }
+    // so that it cycle only between the two clients in workspace 3 and never moves on to the client in workspace 4
+    clientsByWorkspace = Object.values(clientsByWorkspace).map((clients) => {
+        return clients.sort((a, b) => {
+            return a - b;
+        });
+    } );
+
+    return clientsByWorkspace;
 };
 
 //concat the arrays into one array, sorted by workspace id
@@ -80,8 +128,12 @@ const toggleWrongFullscreenClient = (clients, nextClient) => {
     }
 };
 
-const toggleFullscreen = () => {
-    exec(`hyprctl dispatch fullscreen true`);
+const toggleFullscreen = (fullscreenMode) => {
+    if(fullscreenMode === 'borderless'){
+        exec(`hyprctl dispatch fullscreen 0`);
+    } else if(fullscreenMode === 'bordered'){
+        exec(`hyprctl dispatch fullscreen 1`);
+    }
 }
 
 const focusNextClient = (nextClient) => {
@@ -97,33 +149,29 @@ const toggleSpecialWorkspace = (activeWindow, nextClient) => {
     }
 };
 
-// check if the first argument is "prev" (= cycling backwards) and set direction accordingly
-const getDirection = () => {
-    if (process.argv[2] === 'prev') {
-        return -1;
-    } else {
-        return 1;
-    }
-}
-
 
 // wait for both promises to resolve and then execute the rest of the script
 (async () => {
+
     const [clients, activeWindow] = await Promise.all([
         getHyprCtlJSON('clients'),
         getHyprCtlJSON('activewindow'),
     ]);
 
-    let direction = getDirection();
+    let direction = getArg('direction');
+
     let nextClient = getNextClient(clients, activeWindow, direction);
-    toggleWrongFullscreenClient(clients, nextClient);
-    focusNextClient(nextClient);
+    if(nextClient.address !== activeWindow.address) {
+        toggleWrongFullscreenClient(clients, nextClient);
+        focusNextClient(nextClient);
 
-    //super buggy:
-    //if active window is fullscreen toggle next client fullscreen too
-    //toggleFullscreen();
-
-
+        //super buggy:
+        //if active window is fullscreen toggle next client fullscreen too
+        const fullscreen = getArg('fullscreen');
+        if(!nextClient.fullscreen && fullscreen){
+            toggleFullscreen(fullscreen);
+        }
+    }
     // if the active window is in the special workspace and the next client is not, toggle the special workspace off, not working though ...
     // toggleSpecialWorkspace(activeWindow, nextClient);
 })();
