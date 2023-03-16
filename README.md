@@ -8,7 +8,7 @@ sudo apt-get install -y nodejs # on Debian/Ubuntu
 ```
 - download / copy the index.mjs script
 - check if /bin/node does exist on your machine or make shebang (first line in the index.mjs) point to your existing node binary / executable (check via `$ which node`)
-- add two key binds in ~/.config/hypr/hyprland.conf that run the script:
+- add key binds in ~/.config/hypr/hyprland.conf that run the script:
 ```
 binde = SUPER, X, exec, $HOME/.bin/cycle_clients_by_class.mjs
 binde = SUPER SHIFT, X, exec, $HOME/.bin/cycle_clients_by_class.mjs --direction back 
