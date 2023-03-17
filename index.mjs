@@ -1,6 +1,7 @@
 #!/bin/node
 import {exec} from "child_process";
 
+
 function getArg(name) {
 
     const args = process.argv.slice(2);
@@ -124,7 +125,7 @@ const toggleWrongFullscreenClient = (clients, nextClient) => {
     });
     if (wrongFullscreenClient) {
         exec(`hyprctl dispatch focuswindow address:${wrongFullscreenClient.address}`);
-        exec(`hyprctl dispatch fullscreen false`);
+        exec(`hyprctl dispatch fullscreen`);
     }
 };
 
@@ -165,7 +166,6 @@ const toggleSpecialWorkspace = (activeWindow, nextClient) => {
         toggleWrongFullscreenClient(clients, nextClient);
         focusNextClient(nextClient);
 
-        //super buggy:
         //if active window is fullscreen toggle next client fullscreen too
         const fullscreen = getArg('fullscreen');
         if(!nextClient.fullscreen && fullscreen){
